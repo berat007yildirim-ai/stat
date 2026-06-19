@@ -431,8 +431,8 @@ window.STAT = {
         '<button class="mode" id="quickStart"><span class="me">'+ic("rocket")+'</span><b>Snelle ronde</b><small>15 willekeurige vragen uit alle onderwerpen.</small></button>'+
       '</div>';
     setHTML(html);
-    document.getElementById("backBtn").onclick=function(){ state.step=(herk?"herkansing":"track"); renderHome(); window.scrollTo(0,0); };
-    document.getElementById("changeMode").onclick=function(){ state.step="track"; renderHome(); window.scrollTo(0,0); };
+    document.getElementById("backBtn").onclick=function(){ if(state.fromHub){ location.href="https://berat007yildirim-ai.github.io/"; return; } state.step=(herk?"herkansing":"track"); renderHome(); window.scrollTo(0,0); };
+    document.getElementById("changeMode").onclick=function(){ if(state.fromHub){ location.href="https://berat007yildirim-ai.github.io/"; return; } state.step="track"; renderHome(); window.scrollTo(0,0); };
     document.querySelector('[data-mode="quiz"]').onclick=function(){ go("quiz"); };
     document.getElementById("quickStart").onclick=function(){ startQuiz(shuffle(D.questions.slice()).slice(0,15)); go("quiz"); };
   }
@@ -557,6 +557,12 @@ window.STAT = {
   }
 
   document.addEventListener("keydown",function(e){ if(state.key) state.key(e); });
+  // traject vanuit de hub overnemen → direct naar de oefenpagina
+  try{ var _q=new URLSearchParams(location.search); var _m=_q.get("m");
+    if(_m==="training"||_m==="herkansing"){ state.track=_m; lset("stat_track",_m);
+      var _c=_q.get("calm"); if(_c!=null){ calm=(_c!=="0"); lset("stat_calm",calm); applyCalm(); }
+      state.step="practice"; state.fromHub=true; }
+  }catch(e){}
   render();
 })();
 </script>
