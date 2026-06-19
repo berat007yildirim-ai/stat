@@ -349,6 +349,7 @@ window.STAT = {
   function lset(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
   function rawGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
   function rawSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  function bump(ns,key){ try{ fetch("https://abacus.jasoncameron.dev/hit/"+ns+"/"+key).then(function(){},function(){}); }catch(e){} }
 
   D.questions.forEach(function(q,i){ q.id="q"+i; });
   var theme=rawGet("site_theme") || lget("stat_theme","light");
@@ -462,7 +463,7 @@ window.STAT = {
     refresh();
   }
 
-  function startQuiz(items){ state.quiz={items:items.map(function(q){return {q:q,opts:shuffle(q.o.map(function(t,i){return {text:t,ok:i===q.a};}))};}), idx:0, answered:false, picked:-1, correct:0, wrong:[], done:false}; renderQuiz(); }
+  function startQuiz(items){ bump("berat-stat", state.track==="herkansing"?"herkansing":"training"); state.quiz={items:items.map(function(q){return {q:q,opts:shuffle(q.o.map(function(t,i){return {text:t,ok:i===q.a};}))};}), idx:0, answered:false, picked:-1, correct:0, wrong:[], done:false}; renderQuiz(); }
 
   function renderQuiz(){
     var Q=state.quiz; if(Q.done) return renderResult();
@@ -561,6 +562,8 @@ window.STAT = {
   }
 
   document.addEventListener("keydown",function(e){ if(state.key) state.key(e); });
+  // bezoeker tellen (1x per toestel)
+  try{ if(!localStorage.getItem("stat_seen")){ localStorage.setItem("stat_seen","1"); bump("berat-stat","gebruikers"); } }catch(e){ bump("berat-stat","gebruikers"); }
   // traject vanuit de hub overnemen → direct naar de oefenpagina
   try{ var _q=new URLSearchParams(location.search); var _m=_q.get("m");
     if(_m==="training"||_m==="herkansing"){ state.track=_m; lset("stat_track",_m);
