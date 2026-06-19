@@ -78,6 +78,8 @@
 
   .seclabel{display:flex;align-items:center;gap:8px;margin:24px 0 12px;font-weight:700;font-size:15px}
   .seclabel .ic{width:18px;height:18px;color:var(--accent-ink)}
+  .backlink{display:inline-flex;align-items:center;gap:5px;border:none;background:none;color:var(--muted);font-size:13.5px;font-weight:600;padding:6px 0;margin-bottom:4px;transition:color .2s var(--ease)}
+  .backlink:hover{color:var(--accent-ink)} .backlink .ic{width:16px;height:16px}
   .mode{display:flex;flex-direction:column;text-align:left;width:100%;border:1px solid var(--line);background:var(--card);border-radius:var(--r);padding:17px;gap:7px;box-shadow:var(--shadow);transition:transform .2s var(--ease),border-color .2s var(--ease),box-shadow .2s var(--ease)}
   .mode:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
   .mode .me{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent-ink)} .mode .me .ic{width:22px;height:22px}
@@ -312,6 +314,7 @@ window.STAT = {
     sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
     moon:'<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
     arrowR:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    back:'<path d="m15 18-6-6 6-6"/>',
     chevR:'<path d="m9 18 6-6-6-6"/>',
     sparkles:'<path d="M9.94 15.5A2 2 0 0 0 8.5 14.06l-6.14-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0L14.06 8.5A2 2 0 0 0 15.5 9.94l6.14 1.58a.5.5 0 0 1 0 .96L15.5 14.06a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/>',
     target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
@@ -408,7 +411,8 @@ window.STAT = {
   function renderQuiz(){
     var Q=state.quiz; if(Q.done) return renderResult();
     var cur=Q.items[Q.idx], q=cur.q;
-    var html='<div class="card pad">'+
+    var html='<button class="backlink" id="backBtn">'+ic("back")+'Terug</button>'+
+      '<div class="card pad">'+
       '<div class="runtop"><span class="pill">'+esc(TOPICS[q.t])+'</span><div class="bar"><i data-w="'+pct(Q.idx,Q.items.length)+'"></i></div><span>'+(Q.idx+1)+'/'+Q.items.length+'</span></div>'+
       '<div class="qtext">'+esc(q.q)+'</div>'+
       '<div id="opts">'+cur.opts.map(function(o,i){return '<button class="opt" data-i="'+i+'"><span class="k">'+String.fromCharCode(65+i)+'</span><span>'+esc(o.text)+'</span></button>';}).join("")+'</div>'+
@@ -416,6 +420,7 @@ window.STAT = {
       '<div class="row" style="justify-content:space-between;margin-top:6px"><span class="muted" style="font-size:12px">Toets <span class="kbd">A–D</span> · <span class="kbd">Enter</span> = volgende</span><button class="btn hide" id="nextBtn">Volgende '+ic("arrowR")+'</button></div></div>';
     setHTML(html);
     var i2=document.querySelector(".bar>i"); requestAnimationFrame(function(){ if(i2) i2.style.width=i2.getAttribute("data-w")+"%"; });
+    document.getElementById("backBtn").onclick=function(){ state.quiz=null; renderQuizGate(); };
     var optBtns=[].slice.call(document.querySelectorAll("#opts .opt"));
     var nb=document.getElementById("nextBtn"); nb.onclick=next;
     function showAnswered(i){
