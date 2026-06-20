@@ -574,9 +574,9 @@ window.STAT = {
       var em=document.getElementById("fbEmail").value.trim();
       var nm=document.getElementById("fbNaam").value.trim();
       var waar=document.getElementById("fbWaar").value.trim();
-      var payload={access_key:"cbaac6dd-7382-4c16-9463-97d63d712fcf", subject:"Statistiek-tool: feedback", from_name:(nm||"Statistiek oefentool"),
-        naam:nm||"-", vraag:waar||"-", email:em||"-", bericht:msg};
-      if(em) payload.replyto=em;
+      var payload={_subject:"Statistiek-tool: feedback", _template:"table", _captcha:"false",
+        Naam:nm||"-", Over_welke_vraag:waar||"-", email:em||"-", Bericht:msg};
+      if(em) payload._replyto=em;
       // vangnet: als de verzenddienst blokkeert (bv. spamfilter) of er is geen verbinding,
       // bieden we een directe mailto-knop aan zodat de melding NOOIT stilletjes verdwijnt.
       function failFallback(reden){
@@ -585,10 +585,10 @@ window.STAT = {
         setHTML('<div class="card pad"><h2 style="margin-top:0">Automatisch versturen lukte niet</h2><p class="muted">'+reden+' Geen zorgen — klik hieronder en je melding wordt geopend in je e-mail, helemaal klaar om te versturen:</p><a class="btn" href="'+mailto+'">'+ic("send")+'Mail mijn melding direct</a><div style="margin-top:14px"><button class="btn ghost" id="bk">Terug naar start</button></div></div>');
         document.getElementById("bk").onclick=function(){go("home");};
       }
-      fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},body:JSON.stringify(payload)})
+      fetch("https://formsubmit.co/ajax/Berat007yildirim@gmail.com",{method:"POST",headers:{Accept:"application/json"},body:new URLSearchParams(payload)})
         .then(function(r){return r.json();}).then(function(d){
-          if(d&&d.success){ setHTML('<div class="card pad results center"><div style="font-size:42px">✅</div><h2 style="margin:6px 0">Bedankt!</h2><p class="muted">Je melding is verstuurd.</p><button class="btn" id="bk" style="margin-top:8px">Terug naar start</button></div>'); document.getElementById("bk").onclick=function(){go("home");}; }
-          else { failFallback("Onze verzenddienst blokkeerde het bericht."); }
+          if(d&&(d.success===true||d.success==="true")){ setHTML('<div class="card pad results center"><div style="font-size:42px">✅</div><h2 style="margin:6px 0">Bedankt!</h2><p class="muted">Je melding is verstuurd.</p><button class="btn" id="bk" style="margin-top:8px">Terug naar start</button></div>'); document.getElementById("bk").onclick=function(){go("home");}; }
+          else { failFallback("Het automatisch versturen lukte niet."); }
         }).catch(function(){ failFallback("Er was even geen verbinding."); });
     };
   }
